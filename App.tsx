@@ -280,6 +280,14 @@ export default function App() {
             <div>
               <h1 className="text-xl font-bold tracking-tight">VectorAI</h1>
               <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Pro Edition</p>
+              <a 
+                href="https://x.com/navneeit" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[10px] text-slate-500 hover:text-indigo-400 transition-colors block mt-0.5"
+              >
+                @navneeit
+              </a>
             </div>
           </div>
         </div>
