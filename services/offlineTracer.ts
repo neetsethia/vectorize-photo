@@ -6,64 +6,62 @@
  */
 
 const VERTEX_SHADER_SOURCE = `#version 300 es
-  in vec2 a_position;
-  in vec2 a_texCoord;
-  out vec2 v_texCoord;
-  void main() {
-    gl_Position = vec4(a_position, 0, 1);
-    v_texCoord = a_texCoord;
-  }
-`;
+in vec2 a_position;
+in vec2 a_texCoord;
+out vec2 v_texCoord;
+void main() {
+  gl_Position = vec4(a_position, 0, 1);
+  v_texCoord = a_texCoord;
+}`;
 
 const PACKED_OPTIMIZED_SHADER = `#version 300 es
-  precision highp float;
-  in vec2 v_texCoord;
-  out vec4 fragColor;
-  uniform sampler2D u_image;
-  uniform vec2 u_resolution;
-  uniform float u_qFactor;
+precision highp float;
+in vec2 v_texCoord;
+out vec4 fragColor;
+uniform sampler2D u_image;
+uniform vec2 u_resolution;
+uniform float u_qFactor;
 
-  float luminance(vec3 c) {
-    return dot(c, vec3(0.299, 0.587, 0.114));
-  }
+float luminance(vec3 c) {
+  return dot(c, vec3(0.299, 0.587, 0.114));
+}
 
-  vec3 quantize(vec3 color) {
-    return floor(color * 255.0 / u_qFactor + 0.5) * u_qFactor / 255.0;
-  }
+vec3 quantize(vec3 color) {
+  return floor(color * 255.0 / u_qFactor + 0.5) * u_qFactor / 255.0;
+}
 
-  void main() {
-    vec2 px = 1.0 / u_resolution;
-    
-    float w[25] = float[25](
-      0.003, 0.013, 0.022, 0.013, 0.003,
-      0.013, 0.059, 0.097, 0.059, 0.013,
-      0.022, 0.097, 0.159, 0.097, 0.022,
-      0.013, 0.059, 0.097, 0.059, 0.013,
-      0.003, 0.013, 0.022, 0.013, 0.003
-    );
+void main() {
+  vec2 px = 1.0 / u_resolution;
+  
+  // Gaussian Kernel 5x5
+  float w[25] = float[](
+    0.003, 0.013, 0.022, 0.013, 0.003,
+    0.013, 0.059, 0.097, 0.059, 0.013,
+    0.022, 0.097, 0.159, 0.097, 0.022,
+    0.013, 0.059, 0.097, 0.059, 0.013,
+    0.003, 0.013, 0.022, 0.013, 0.003
+  );
 
-    vec3 blurred = vec3(0.0);
-    int k = 0;
-
-    for (int j = -2; j <= 2; j++) {
-      for (int i = -2; i <= 2; i++) {
-        blurred += texture(u_image, v_texCoord + vec2(float(i), float(j)) * px).rgb * w[k];
-        k++;
-      }
+  vec3 blurred = vec3(0.0);
+  
+  for (int j = -2; j <= 2; j++) {
+    for (int i = -2; i <= 2; i++) {
+      int idx = (j + 2) * 5 + (i + 2);
+      blurred += texture(u_image, v_texCoord + vec2(float(i), float(j)) * px).rgb * w[idx];
     }
-
-    vec3 qColor = quantize(blurred);
-
-    float sLeft = luminance(quantize(texture(u_image, v_texCoord + vec2(-px.x, 0.0)).rgb));
-    float sRight = luminance(quantize(texture(u_image, v_texCoord + vec2(px.x, 0.0)).rgb));
-    float sUp = luminance(quantize(texture(u_image, v_texCoord + vec2(0.0, -px.y)).rgb));
-    float sDown = luminance(quantize(texture(u_image, v_texCoord + vec2(0.0, px.y)).rgb));
-
-    float edge = abs(sLeft - sRight) + abs(sUp - sDown);
-    
-    fragColor = vec4(qColor, edge > 0.01 ? 1.0 : 0.0);
   }
-`;
+
+  vec3 qColor = quantize(blurred);
+
+  float sLeft = luminance(quantize(texture(u_image, v_texCoord + vec2(-px.x, 0.0)).rgb));
+  float sRight = luminance(quantize(texture(u_image, v_texCoord + vec2(px.x, 0.0)).rgb));
+  float sUp = luminance(quantize(texture(u_image, v_texCoord + vec2(0.0, -px.y)).rgb));
+  float sDown = luminance(quantize(texture(u_image, v_texCoord + vec2(0.0, px.y)).rgb));
+
+  float edge = abs(sLeft - sRight) + abs(sUp - sDown);
+  
+  fragColor = vec4(qColor, edge > 0.01 ? 1.0 : 0.0);
+}`;
 
 function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
