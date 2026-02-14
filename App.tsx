@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { 
   Github, Zap, X, CheckCircle2, Loader2, Archive, 
@@ -271,35 +270,35 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f7f7f7]">
-      <aside className="w-80 ubuntu-gradient text-white flex flex-col shadow-2xl fixed h-full z-50">
-        <div className="p-6 border-b border-white/10">
+    <div className="flex min-h-screen bg-slate-50">
+      <aside className="w-80 bg-slate-900 text-white flex flex-col shadow-2xl fixed h-full z-50">
+        <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3 mb-2">
-            <div className="bg-[#E95420] p-2 rounded-lg">
+            <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-500/30">
               <Box className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight">VectorAI</h1>
-              <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold">Standard Pro Edition</p>
+              <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Pro Edition</p>
             </div>
           </div>
         </div>
 
         <nav className="flex-grow p-6 space-y-8 overflow-y-auto custom-scrollbar">
           <div className="space-y-4">
-            <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-2">
+            <h3 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
               <ArrowRightLeft className="w-3 h-3" /> Operation Mode
             </h3>
-            <div className="bg-white/5 p-1 rounded-xl flex gap-1 border border-white/10">
+            <div className="bg-slate-800 p-1 rounded-xl flex gap-1 border border-slate-700">
               <button 
                 onClick={() => !isProcessing && setConversionMode('raster-to-vector')}
-                className={`flex-1 py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${conversionMode === 'raster-to-vector' ? 'bg-[#E95420] text-white shadow-lg' : 'text-white/40 hover:text-white/60'}`}
+                className={`flex-1 py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${conversionMode === 'raster-to-vector' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
                 <ImageIcon className="w-3 h-3" /> Vectorize
               </button>
               <button 
                 onClick={() => !isProcessing && setConversionMode('vector-to-raster')}
-                className={`flex-1 py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${conversionMode === 'vector-to-raster' ? 'bg-[#E95420] text-white shadow-lg' : 'text-white/40 hover:text-white/60'}`}
+                className={`flex-1 py-2 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 ${conversionMode === 'vector-to-raster' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
                 <FileCode className="w-3 h-3" /> Rasterize
               </button>
@@ -307,7 +306,7 @@ export default function App() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-2">
+            <h3 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
               <Settings2 className="w-3 h-3" /> Trace Engine
             </h3>
             <div className="space-y-4">
@@ -318,7 +317,7 @@ export default function App() {
                       <button
                         key={p.name}
                         onClick={() => applyPreset(p)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all border ${selectedPreset === p.name ? 'bg-white text-[#300a24] border-white shadow-lg' : 'bg-white/5 border-white/10 text-white/60 hover:text-white'}`}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all border ${selectedPreset === p.name ? 'bg-white text-slate-900 border-white shadow-lg' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}
                       >
                         {p.icon} {p.name}
                       </button>
@@ -326,8 +325,8 @@ export default function App() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs font-medium">
-                      <span>Simplification</span>
-                      <span className="text-[#E95420] font-bold">{config.simplification}%</span>
+                      <span className="text-slate-400">Simplification</span>
+                      <span className="text-indigo-400 font-bold">{config.simplification}%</span>
                     </div>
                     <input 
                       type="range" min="0" max="100" step="5" 
@@ -337,40 +336,40 @@ export default function App() {
                         setConfig({...config, simplification: parseInt(e.target.value)});
                         setSelectedPreset('Custom');
                       }}
-                      className="w-full accent-[#E95420]" 
+                      className="w-full accent-indigo-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer" 
                     />
                   </div>
                 </>
               )}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-medium">
-                  <span>Output Detail</span>
-                  <span className="text-[#E95420] font-bold">{resolutionLabels[config.targetResolution]}</span>
+                  <span className="text-slate-400">Output Detail</span>
+                  <span className="text-indigo-400 font-bold">{resolutionLabels[config.targetResolution]}</span>
                 </div>
                 <input 
                   type="range" min="0" max="4" step="1" 
                   value={config.targetResolution} 
                   disabled={isProcessing}
                   onChange={(e) => setConfig({...config, targetResolution: parseInt(e.target.value)})}
-                  className="w-full accent-[#E95420]" 
+                  className="w-full accent-indigo-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer" 
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-white/10">
-            <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-800">
+            <h3 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
               <FileText className="w-3 h-3" /> PDF Layout
             </h3>
-            <div className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+            <div className="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-white/60">Page Size</label>
+                <label className="text-[10px] uppercase font-bold text-slate-400">Page Size</label>
                 <div className="grid grid-cols-3 gap-1">
                   {(['a4', 'letter', 'fit'] as const).map(size => (
                     <button
                       key={size}
                       onClick={() => setConfig({...config, pdfPageSize: size})}
-                      className={`py-1.5 rounded-lg text-[9px] font-bold uppercase ${config.pdfPageSize === size ? 'bg-[#E95420]' : 'bg-white/5 text-white/40'}`}
+                      className={`py-1.5 rounded-lg text-[9px] font-bold uppercase ${config.pdfPageSize === size ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
                     >
                       {size}
                     </button>
@@ -378,50 +377,50 @@ export default function App() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-white/60">Orientation</label>
+                <label className="text-[10px] uppercase font-bold text-slate-400">Orientation</label>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setConfig({...config, pdfOrientation: 'p'})}
-                    className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase flex items-center justify-center gap-1 ${config.pdfOrientation === 'p' ? 'bg-[#E95420]' : 'bg-white/5 text-white/40'}`}
+                    className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase flex items-center justify-center gap-1 ${config.pdfOrientation === 'p' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
                   >
                     <Monitor className="w-3 h-3" /> Port
                   </button>
                   <button
                     onClick={() => setConfig({...config, pdfOrientation: 'l'})}
-                    className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase flex items-center justify-center gap-1 ${config.pdfOrientation === 'l' ? 'bg-[#E95420]' : 'bg-white/5 text-white/40'}`}
+                    className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase flex items-center justify-center gap-1 ${config.pdfOrientation === 'l' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
                   >
                     <Monitor className="w-3 h-3 rotate-90" /> Land
                   </button>
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex justify-between text-[10px] uppercase font-bold text-white/60">
+                <div className="flex justify-between text-[10px] uppercase font-bold text-slate-400">
                   <span>Margins</span>
-                  <span className="text-[#E95420]">{config.pdfMargins}mm</span>
+                  <span className="text-indigo-400">{config.pdfMargins}mm</span>
                 </div>
                 <input 
                   type="range" min="0" max="50" step="5" 
                   value={config.pdfMargins} 
                   onChange={(e) => setConfig({...config, pdfMargins: parseInt(e.target.value)})}
-                  className="w-full accent-[#E95420]" 
+                  className="w-full accent-indigo-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer" 
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-white/10">
-            <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-800">
+            <h3 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
               <WifiOff className="w-3 h-3" /> System
             </h3>
             <button 
               onClick={() => setConfig({...config, offlineMode: !config.offlineMode})}
-              className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all ${config.offlineMode ? 'bg-[#E95420]/20 border-[#E95420] text-white' : 'bg-white/5 border-white/10 text-white/60'}`}
+              className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all ${config.offlineMode ? 'bg-indigo-900/30 border-indigo-500/50 text-indigo-300' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
             >
               <div className="flex items-center gap-3">
                 <Monitor className="w-4 h-4" />
                 <span className="text-sm font-bold">Local Tracing</span>
               </div>
-              <div className={`w-8 h-4 rounded-full relative ${config.offlineMode ? 'bg-[#E95420]' : 'bg-white/20'}`}>
+              <div className={`w-8 h-4 rounded-full relative transition-colors ${config.offlineMode ? 'bg-indigo-500' : 'bg-slate-600'}`}>
                 <div className={`absolute top-1 w-2 h-2 bg-white rounded-full transition-all ${config.offlineMode ? 'left-5' : 'left-1'}`} />
               </div>
             </button>
@@ -432,7 +431,7 @@ export default function App() {
       <main className="flex-grow ml-80 p-8 min-h-screen">
         <header className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-[#333]">
+            <h2 className="text-2xl font-bold text-slate-900">
               {conversionMode === 'raster-to-vector' ? 'Vectorize Photos' : 'Render Assets'}
             </h2>
             <p className="text-sm text-slate-500">Professional path generation and rendering queue</p>
@@ -447,9 +446,9 @@ export default function App() {
                 {completedCount > 0 && (
                    <button 
                     onClick={() => setShowBatchExportDropdown(!showBatchExportDropdown)}
-                    className="px-4 py-2.5 bg-white border border-slate-200 text-[#333] rounded-lg font-bold shadow-sm flex items-center gap-2 hover:bg-slate-50"
+                    className="px-4 py-2.5 bg-white border border-slate-200 text-slate-900 rounded-lg font-bold shadow-sm flex items-center gap-2 hover:bg-slate-50"
                   >
-                    <FileDown className="w-4 h-4 text-[#E95420]" /> Export
+                    <FileDown className="w-4 h-4 text-indigo-600" /> Export
                   </button>
                 )}
                 {showBatchExportDropdown && (
@@ -463,7 +462,7 @@ export default function App() {
                   </div>
                 )}
                 {!isProcessing ? (
-                   <button onClick={processBatch} className="px-6 py-2.5 ubuntu-button-primary rounded-lg font-bold shadow-lg flex items-center gap-2">
+                   <button onClick={processBatch} className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-bold shadow-lg shadow-indigo-200 flex items-center gap-2 hover:bg-indigo-700 transition-colors">
                     <Play className="w-4 h-4" /> Run
                   </button>
                 ) : (
@@ -479,11 +478,11 @@ export default function App() {
         {isProcessing && (
           <div className="mb-6 bg-white p-4 rounded-xl border border-slate-100 shadow-sm animate-in slide-in-from-top-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#E95420]">Processing...</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">Processing...</span>
               <span className="text-xs font-bold text-slate-500">{overallProgress}%</span>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-               <div className="h-full bg-[#E95420] transition-all" style={{ width: `${overallProgress}%` }} />
+               <div className="h-full bg-indigo-600 transition-all" style={{ width: `${overallProgress}%` }} />
             </div>
           </div>
         )}
@@ -495,20 +494,20 @@ export default function App() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {batchItems.map((item) => (
-              <div key={item.id} className="ubuntu-card rounded-xl overflow-hidden group hover:border-[#E95420] transition-colors bg-white">
-                <div className="aspect-square bg-white relative flex items-center justify-center p-4">
+              <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-indigo-500 transition-all shadow-sm hover:shadow-md">
+                <div className="aspect-square bg-slate-50 relative flex items-center justify-center p-4">
                   <img src={item.previewUrl} alt="preview" className="max-w-full max-h-full object-contain" />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm px-4">
+                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm px-4">
                     {!isProcessing && (
                       <>
-                        <button onClick={() => removeBatchItem(item.id)} className="p-2 bg-white rounded-lg text-red-600 shadow-lg"><X className="w-5 h-5" /></button>
+                        <button onClick={() => removeBatchItem(item.id)} className="p-2 bg-white rounded-lg text-rose-600 shadow-lg hover:bg-rose-50"><X className="w-5 h-5" /></button>
                         {item.result && (
                           <>
-                            <button onClick={() => setActiveCompareId(item.id)} className="p-2 bg-white rounded-lg text-blue-600 shadow-lg"><Eye className="w-5 h-5" /></button>
+                            <button onClick={() => setActiveCompareId(item.id)} className="p-2 bg-white rounded-lg text-indigo-600 shadow-lg hover:bg-indigo-50"><Eye className="w-5 h-5" /></button>
                             {conversionMode === 'raster-to-vector' && (
                               <>
-                                <button onClick={() => setActiveEditId(item.id)} className="p-2 bg-white rounded-lg text-amber-600 shadow-lg"><Edit3 className="w-5 h-5" /></button>
-                                <button onClick={() => refineWithAI(item.id)} className="p-2 bg-white rounded-lg text-emerald-600 shadow-lg"><Wand2 className="w-5 h-5" /></button>
+                                <button onClick={() => setActiveEditId(item.id)} className="p-2 bg-white rounded-lg text-amber-600 shadow-lg hover:bg-amber-50"><Edit3 className="w-5 h-5" /></button>
+                                <button onClick={() => refineWithAI(item.id)} className="p-2 bg-white rounded-lg text-emerald-600 shadow-lg hover:bg-emerald-50"><Wand2 className="w-5 h-5" /></button>
                               </>
                             )}
                           </>
@@ -517,16 +516,16 @@ export default function App() {
                     )}
                   </div>
                   <div className="absolute top-2 right-2">
-                    {item.status === ProcessingStep.COMPLETED && <CheckCircle2 className="w-6 h-6 text-green-500 fill-white" />}
-                    {item.status === ProcessingStep.ANALYZING && <Loader2 className="w-5 h-5 text-[#E95420] animate-spin" />}
+                    {item.status === ProcessingStep.COMPLETED && <CheckCircle2 className="w-6 h-6 text-emerald-500 fill-white" />}
+                    {item.status === ProcessingStep.ANALYZING && <Loader2 className="w-5 h-5 text-indigo-600 animate-spin" />}
                   </div>
                 </div>
-                <div className="p-4 border-t border-slate-50">
-                  <p className="text-xs font-bold text-slate-800 truncate">{item.file.name}</p>
+                <div className="p-4 border-t border-slate-100">
+                  <p className="text-xs font-bold text-slate-700 truncate">{item.file.name}</p>
                 </div>
               </div>
             ))}
-            <button onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()} className="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-[#E95420] hover:text-[#E95420] transition-all bg-white">
+            <button onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()} className="aspect-square rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-indigo-500 hover:text-indigo-500 transition-all bg-slate-50 hover:bg-indigo-50/10">
               <Files className="w-8 h-8" />
               <span className="text-[10px] font-bold uppercase">Add Item</span>
             </button>

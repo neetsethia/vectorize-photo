@@ -52,8 +52,8 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onImagesSelected, isProcessi
       onDrop={handleDrop}
       className={`relative group flex flex-col items-center justify-center w-full h-80 border-2 border-dashed rounded-2xl transition-all duration-300 ${
         isDragging 
-          ? 'border-[#E95420] bg-[#E95420]/5' 
-          : 'border-slate-300 bg-white hover:border-[#E95420] hover:bg-slate-50'
+          ? 'border-indigo-500 bg-indigo-50' 
+          : 'border-slate-300 bg-white hover:border-indigo-500 hover:bg-slate-50'
       } ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
       onClick={() => fileInputRef.current?.click()}
     >
@@ -67,8 +67,8 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onImagesSelected, isProcessi
       />
       
       <div className="flex flex-col items-center space-y-4 text-slate-500">
-        <div className="p-4 bg-slate-100 rounded-full group-hover:scale-110 group-hover:bg-[#E95420]/10 transition-all duration-300">
-          <Files className="w-8 h-8 text-[#E95420]" />
+        <div className="p-4 bg-slate-100 rounded-full group-hover:scale-110 group-hover:bg-indigo-50 transition-all duration-300">
+          <Files className="w-8 h-8 text-indigo-500" />
         </div>
         <div className="text-center">
           <p className="text-lg font-semibold text-slate-700">
@@ -82,13 +82,13 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onImagesSelected, isProcessi
       
       <div className="absolute bottom-4 flex space-x-4">
         <button 
-          className="flex items-center space-x-1 text-xs font-medium text-slate-400 hover:text-[#E95420] transition-colors"
+          className="flex items-center space-x-1 text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors"
           onClick={(e) => e.stopPropagation()}
         >
           <Camera className="w-3.5 h-3.5" />
           <span>Capture</span>
         </button>
-        <button className="flex items-center space-x-1 text-xs font-medium text-slate-400 hover:text-[#E95420] transition-colors">
+        <button className="flex items-center space-x-1 text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors">
           <ImageIcon className="w-3.5 h-3.5" />
           <span>Library</span>
         </button>

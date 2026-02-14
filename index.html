@@ -1,53 +1,31 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VectorAI - Ubuntu Edition</title>
+    <title>VectorAI - Professional Vector Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --ubuntu-orange: #E95420;
-            --ubuntu-aubergine: #300a24;
-            --ubuntu-warm-grey: #aea79f;
-            --ubuntu-dark-grey: #333333;
-        }
         body { 
-            font-family: 'Ubuntu', sans-serif; 
-            background-color: #f7f7f7;
-            color: var(--ubuntu-dark-grey);
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc;
+            color: #0f172a;
         }
-        .ubuntu-gradient {
-            background: linear-gradient(135deg, var(--ubuntu-aubergine) 0%, #5E2750 100%);
-        }
-        .ubuntu-card {
-            background: white;
-            border: 1px solid #d3d3d3;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .ubuntu-button-primary {
-            background-color: var(--ubuntu-orange);
-            color: white;
-            transition: filter 0.2s;
-        }
-        .ubuntu-button-primary:hover {
-            filter: brightness(1.1);
-        }
-        /* Custom scrollbar to match GNOME style */
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
+            background: #cbd5e1;
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--ubuntu-warm-grey);
+            background: #94a3b8;
         }
     </style>
 <script type="importmap">

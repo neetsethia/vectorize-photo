@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { X, Layers, Image as ImageIcon, ArrowRightLeft } from 'lucide-react';
 import { BatchItem, ConversionMode } from '../types.ts';
@@ -20,7 +19,6 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversi
     setSliderPos(Math.min(Math.max(x, 0), 100));
   };
 
-  // Fix: Added useMemo to imports from 'react' to resolve reference error
   const svgUrl = useMemo(() => {
     if (item.result && conversionMode === 'raster-to-vector') {
         return URL.createObjectURL(new Blob([item.result], { type: 'image/svg+xml' }));
@@ -51,7 +49,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversi
             <ImageIcon className="w-3.5 h-3.5" /> Source
           </div>
           <div className="w-px h-3 bg-white/20" />
-          <div className="flex items-center gap-2 text-[#E95420]">
+          <div className="flex items-center gap-2 text-indigo-500">
              Vector Result <Layers className="w-3.5 h-3.5" />
           </div>
         </div>
@@ -74,7 +72,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversi
           {/* Top Image (Result) */}
           <div 
             className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none"
-            style={{ width: `${sliderPos}%`, borderRight: '2px solid #E95420' }}
+            style={{ width: `${sliderPos}%`, borderRight: '2px solid #6366f1' }}
           >
             <div className="w-[80vh] h-[80vh] max-w-none max-h-none">
                 <img 
@@ -86,17 +84,17 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversi
 
           {/* Slider UI Handle */}
           <div 
-            className="absolute top-0 bottom-0 w-0.5 bg-[#E95420] pointer-events-none flex items-center justify-center"
+            className="absolute top-0 bottom-0 w-0.5 bg-indigo-500 pointer-events-none flex items-center justify-center"
             style={{ left: `${sliderPos}%` }}
           >
-            <div className="w-8 h-8 rounded-full bg-[#E95420] shadow-xl flex items-center justify-center text-white scale-110">
+            <div className="w-8 h-8 rounded-full bg-indigo-500 shadow-xl flex items-center justify-center text-white scale-110">
               <ArrowRightLeft className="w-4 h-4 rotate-90" />
             </div>
           </div>
 
           {/* Labels */}
           <div className="absolute top-4 left-4 bg-black/40 text-white text-[10px] px-2 py-1 rounded backdrop-blur">ORIGINAL</div>
-          <div className="absolute top-4 right-4 bg-[#E95420]/80 text-white text-[10px] px-2 py-1 rounded backdrop-blur">VECTORIZED</div>
+          <div className="absolute top-4 right-4 bg-indigo-600/80 text-white text-[10px] px-2 py-1 rounded backdrop-blur">VECTORIZED</div>
         </div>
       </main>
 
