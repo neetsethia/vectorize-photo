@@ -1,6 +1,6 @@
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { X, Save, MousePointer2, Move, Maximize2, Palette, Undo2, Layers, Trash2 } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Save, MousePointer2, Move, Maximize2, Palette, Undo2, Layers, Trash2, Eye, EyeOff } from 'lucide-react';
 
 interface EditableShape {
   id: string;
@@ -22,12 +22,17 @@ interface VectorEditorProps {
 
 export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, onClose, fileName }) => {
   const [shapes, setShapes] = useState<EditableShape[]>([]);
+  const [history, setHistory] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [tool, setTool] = useState<'select' | 'move' | 'scale' | 'color'>('select');
   const [viewBox, setViewBox] = useState({ w: 1000, h: 1000 });
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [originalShapes, setOriginalShapes] = useState<EditableShape[]>([]);
+  
   const svgRef = useRef<SVGSVGElement>(null);
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
+  const dragStartShape = useRef<EditableShape | null>(null);
 
   // Parse SVG string into editable objects
   useEffect(() => {
@@ -62,8 +67,26 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
         };
       });
       setShapes(paths);
+      setOriginalShapes(JSON.parse(JSON.stringify(paths)));
+      setHistory([JSON.stringify(paths)]);
     }
   }, [svgString]);
+
+  const addToHistory = (newShapes: EditableShape[]) => {
+    const json = JSON.stringify(newShapes);
+    if (history[history.length - 1] !== json) {
+      setHistory(prev => [...prev.slice(-19), json]); // Keep last 20 states
+    }
+  };
+
+  const handleUndo = () => {
+    if (history.length > 1) {
+      const newHistory = history.slice(0, -1);
+      setHistory(newHistory);
+      setShapes(JSON.parse(newHistory[newHistory.length - 1]));
+      setSelectedIndex(null);
+    }
+  };
 
   const getMousePos = (e: React.MouseEvent | MouseEvent) => {
     if (!svgRef.current) return { x: 0, y: 0 };
@@ -80,6 +103,7 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
     setSelectedIndex(index);
     isDragging.current = true;
     lastPos.current = getMousePos(e);
+    dragStartShape.current = shapes[index];
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -105,7 +129,11 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
   };
 
   const handleMouseUp = () => {
-    isDragging.current = false;
+    if (isDragging.current) {
+      isDragging.current = false;
+      dragStartShape.current = null;
+      addToHistory(shapes);
+    }
   };
 
   useEffect(() => {
@@ -115,28 +143,41 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [tool, selectedIndex]);
+  }, [tool, selectedIndex, shapes]); // Added shapes dependency to ensure history captures correct state
 
   const handleColorChange = (color: string) => {
     if (selectedIndex !== null) {
-      setShapes(prev => prev.map((s, i) => i === selectedIndex ? { ...s, fill: color } : s));
+      const newShapes = shapes.map((s, i) => i === selectedIndex ? { ...s, fill: color } : s);
+      setShapes(newShapes);
     }
   };
+  
+  const commitColorChange = () => {
+     addToHistory(shapes);
+  }
 
   const deleteSelected = () => {
     if (selectedIndex !== null) {
-      setShapes(prev => prev.filter((_, i) => i !== selectedIndex));
+      const newShapes = shapes.filter((_, i) => i !== selectedIndex);
+      setShapes(newShapes);
       setSelectedIndex(null);
+      addToHistory(newShapes);
     }
   };
 
   const generateSvg = () => {
     const paths = shapes.map(s => {
+      // Note: transform-origin is handled via CSS in editor, but for export we might need to bake it or rely on grouping.
+      // For simplicity in this exporter, we use the standard transform. 
+      // To strictly match editor 'fill-box' behavior in pure SVG 1.1 without CSS is hard, 
+      // but modern SVG viewers support transform-box. We will include a style attribute.
       const transform = `translate(${s.x}, ${s.y}) scale(${s.scale})`;
-      return `<path d="${s.d}" fill="${s.fill}" transform="${transform}" />`;
+      return `<path d="${s.d}" fill="${s.fill}" transform="${transform}" style="transform-box: fill-box; transform-origin: center;" />`;
     }).join('\n');
     return `<svg viewBox="0 0 ${viewBox.w} ${viewBox.h}" xmlns="http://www.w3.org/2000/svg">\n${paths}\n</svg>`;
   };
+
+  const currentShapes = showOriginal ? originalShapes : shapes;
 
   return (
     <div className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
@@ -152,12 +193,35 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
           </div>
         </div>
 
-        <div className="flex items-center bg-slate-800 p-1 rounded-xl gap-1">
-          <ToolButton active={tool === 'select'} onClick={() => setTool('select')} icon={<MousePointer2 className="w-4 h-4" />} label="Select" />
-          <ToolButton active={tool === 'move'} onClick={() => setTool('move')} icon={<Move className="w-4 h-4" />} label="Move" />
-          <ToolButton active={tool === 'scale'} onClick={() => setTool('scale')} icon={<Maximize2 className="w-4 h-4" />} label="Scale" />
-          <div className="w-px h-4 bg-white/10 mx-1" />
-          <ToolButton active={tool === 'color'} onClick={() => setTool('color')} icon={<Palette className="w-4 h-4" />} label="Styles" />
+        <div className="flex items-center gap-3">
+           <div className="flex items-center bg-slate-800 p-1 rounded-xl gap-1">
+            <ToolButton active={tool === 'select'} onClick={() => setTool('select')} icon={<MousePointer2 className="w-4 h-4" />} label="Select" />
+            <ToolButton active={tool === 'move'} onClick={() => setTool('move')} icon={<Move className="w-4 h-4" />} label="Move" />
+            <ToolButton active={tool === 'scale'} onClick={() => setTool('scale')} icon={<Maximize2 className="w-4 h-4" />} label="Scale" />
+            <div className="w-px h-4 bg-white/10 mx-1" />
+            <ToolButton active={tool === 'color'} onClick={() => setTool('color')} icon={<Palette className="w-4 h-4" />} label="Styles" />
+          </div>
+          
+          <div className="w-px h-6 bg-white/10" />
+
+          <button 
+            onClick={handleUndo} 
+            disabled={history.length <= 1}
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+            title="Undo"
+          >
+            <Undo2 className="w-5 h-5" />
+          </button>
+
+          <button
+             onMouseDown={() => setShowOriginal(true)}
+             onMouseUp={() => setShowOriginal(false)}
+             onMouseLeave={() => setShowOriginal(false)}
+             className={`p-2 rounded-lg transition-all ${showOriginal ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
+             title="Hold to see original"
+          >
+            <Eye className="w-5 h-5" />
+          </button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -182,12 +246,16 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
                 <div className="p-3 bg-slate-800 rounded-xl space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-400 text-xs">Fill Color</span>
-                    <input 
-                      type="color" 
-                      value={shapes[selectedIndex].fill}
-                      onChange={(e) => handleColorChange(e.target.value)}
-                      className="w-6 h-6 rounded border-none bg-transparent cursor-pointer"
-                    />
+                    <div className="flex gap-2">
+                        <div className="w-6 h-6 rounded-full border border-white/20 shadow-sm" style={{ backgroundColor: shapes[selectedIndex].fill }} />
+                        <input 
+                        type="color" 
+                        value={shapes[selectedIndex].fill}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        onBlur={commitColorChange} // Commit to history on blur
+                        className="w-6 h-6 rounded border-none bg-transparent cursor-pointer opacity-0 absolute"
+                        />
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <label className="text-slate-500 text-[10px] uppercase font-bold">Scaling</label>
@@ -195,6 +263,7 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
                       type="range" min="0.1" max="3" step="0.1"
                       value={shapes[selectedIndex].scale}
                       onChange={(e) => setShapes(prev => prev.map((s, i) => i === selectedIndex ? { ...s, scale: parseFloat(e.target.value) } : s))}
+                      onMouseUp={() => addToHistory(shapes)} // Commit to history on release
                       className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                     />
                   </div>
@@ -216,13 +285,13 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-white/40 text-[10px] uppercase font-black tracking-widest">Layers ({shapes.length})</h3>
+            <h3 className="text-white/40 text-[10px] uppercase font-black tracking-widest">Layers ({currentShapes.length})</h3>
             <div className="space-y-1 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              {shapes.map((s, i) => (
+              {currentShapes.map((s, i) => (
                 <button 
                   key={s.id}
                   onClick={() => setSelectedIndex(i)}
-                  className={`w-full text-left p-2 rounded-lg text-xs flex items-center gap-2 transition-colors ${selectedIndex === i ? 'bg-indigo-600 text-white' : 'hover:bg-white/5 text-slate-400'}`}
+                  className={`w-full text-left p-2 rounded-lg text-xs flex items-center gap-2 transition-colors ${selectedIndex === i && !showOriginal ? 'bg-indigo-600 text-white' : 'hover:bg-white/5 text-slate-400'}`}
                 >
                   <div className="w-4 h-4 rounded border border-white/10" style={{ backgroundColor: s.fill }} />
                   Path {i + 1}
@@ -241,21 +310,36 @@ export const VectorEditor: React.FC<VectorEditorProps> = ({ svgString, onSave, o
               className="w-full h-full cursor-crosshair"
               onClick={() => setSelectedIndex(null)}
             >
-              {shapes.map((s, i) => (
-                <path
-                  key={s.id}
-                  d={s.d}
-                  fill={s.fill}
-                  transform={`translate(${s.x}, ${s.y}) scale(${s.scale})`}
-                  onMouseDown={(e) => handleMouseDown(e, i)}
-                  className={`transition-shadow cursor-move ${selectedIndex === i ? 'stroke-indigo-500 stroke-[4px] stroke-dasharray-[10,5]' : 'hover:stroke-slate-300 hover:stroke-[2px]'}`}
-                />
+              {currentShapes.map((s, i) => (
+                <g key={s.id}>
+                    {/* Ghost for original position during drag */}
+                    {selectedIndex === i && isDragging.current && dragStartShape.current && !showOriginal && (
+                        <path 
+                            d={dragStartShape.current.d}
+                            fill="none"
+                            stroke="#94a3b8"
+                            strokeWidth="1"
+                            strokeDasharray="4 4"
+                            transform={`translate(${dragStartShape.current.x}, ${dragStartShape.current.y}) scale(${dragStartShape.current.scale})`}
+                            style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: 0.5 }}
+                        />
+                    )}
+                    <path
+                    d={s.d}
+                    fill={s.fill}
+                    transform={`translate(${s.x}, ${s.y}) scale(${s.scale})`}
+                    style={{ transformBox: 'fill-box', transformOrigin: 'center', transition: isDragging.current ? 'none' : 'transform 0.1s ease-out' }}
+                    onMouseDown={(e) => handleMouseDown(e, i)}
+                    className={`cursor-move ${selectedIndex === i && !showOriginal ? 'stroke-indigo-500 stroke-[2px]' : 'hover:stroke-slate-300 hover:stroke-[1px]'}`}
+                    vectorEffect="non-scaling-stroke" 
+                    />
+                </g>
               ))}
             </svg>
             
             {/* Info Overlay */}
             <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-[10px] text-white/80 font-mono">
-              Viewport: {viewBox.w}x{viewBox.h} | Selection: {selectedIndex !== null ? `#${selectedIndex}` : 'None'}
+              Viewport: {viewBox.w}x{viewBox.h} | Selection: {selectedIndex !== null ? `#${selectedIndex}` : 'None'} {showOriginal ? '(ORIGINAL VIEW)' : ''}
             </div>
           </div>
         </main>
