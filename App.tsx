@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { 
   Github, Zap, X, CheckCircle2, Loader2, Archive, 
@@ -7,16 +8,16 @@ import {
   Eye, Wand2, Palette, FileText, ChevronDown,
   FileCode
 } from 'lucide-react';
-import { Dropzone } from './components/Dropzone';
-import { VectorEditor } from './components/VectorEditor';
-import { ComparisonModal } from './components/ComparisonModal';
-import { ProcessingStep, BatchItem, BatchConfig, ConversionMode } from './types';
-import { convertToVector } from './services/gemini';
-import { traceImageOffline } from './services/offlineTracer';
+import { Dropzone } from './components/Dropzone.tsx';
+import { VectorEditor } from './components/VectorEditor.tsx';
+import { ComparisonModal } from './components/ComparisonModal.tsx';
+import { ProcessingStep, BatchItem, BatchConfig, ConversionMode } from './types.ts';
+import { convertToVector } from './services/gemini.ts';
+import { traceImageOffline } from './services/offlineTracer.ts';
 import { jsPDF } from 'jspdf';
 import JSZip from 'jszip';
 
-const App: React.FC = () => {
+export default function App() {
   const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [conversionMode, setConversionMode] = useState<ConversionMode>('raster-to-vector');
@@ -554,6 +555,4 @@ const App: React.FC = () => {
       )}
     </div>
   );
-};
-
-export default App;
+}

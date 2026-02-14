@@ -1,8 +1,7 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-// Fix: Added ArrowRightLeft to the list of icons imported from lucide-react
-import { X, Layers, ImageIcon, ArrowRightLeft } from 'lucide-react';
-import { BatchItem, ConversionMode } from '../types';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { X, Layers, Image as ImageIcon, ArrowRightLeft } from 'lucide-react';
+import { BatchItem, ConversionMode } from '../types.ts';
 
 interface ComparisonModalProps {
   item: BatchItem;
@@ -13,7 +12,6 @@ interface ComparisonModalProps {
 export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversionMode, onClose }) => {
   const [sliderPos, setSliderPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isResizing, setIsResizing] = useState(false);
 
   const handleMouseMove = (e: MouseEvent | React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -22,9 +20,13 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, conversi
     setSliderPos(Math.min(Math.max(x, 0), 100));
   };
 
-  const svgUrl = item.result && conversionMode === 'raster-to-vector' 
-    ? URL.createObjectURL(new Blob([item.result], { type: 'image/svg+xml' }))
-    : null;
+  // Fix: Added useMemo to imports from 'react' to resolve reference error
+  const svgUrl = useMemo(() => {
+    if (item.result && conversionMode === 'raster-to-vector') {
+        return URL.createObjectURL(new Blob([item.result], { type: 'image/svg+xml' }));
+    }
+    return null;
+  }, [item.result, conversionMode]);
 
   useEffect(() => {
     return () => {
