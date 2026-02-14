@@ -1,6 +1,6 @@
 {
-  "name": "VectorAI: Raster to Vector Converter",
-  "description": "A high-performance web application that uses Gemini AI and smart tracing algorithms to convert raster images (JPG, PNG) into clean, scalable SVG vector graphics.",
+  "name": "VectorAI: The Ultimate Vector Engine",
+  "description": "Professional-grade Raster to Vector converter leveraging GPU acceleration and Gemini AI for pixel-perfect path tracing.",
   "requestFramePermissions": [
     "camera"
   ]
