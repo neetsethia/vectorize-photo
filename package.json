@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^0.1.2",
+    "@google/genai": "*",
     "jspdf": "^2.5.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.395.0",
@@ -26,6 +26,6 @@
     "vite": "^5.2.13"
   },
   "overrides": {
-    "glob": "^11.0.0"
+    "glob": "^10.4.5"
   }
 }
