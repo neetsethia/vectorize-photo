@@ -1,0 +1,29 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.vectorai.VectorAI</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>VectorAI</name>
+  <summary>High-performance Raster to Vector Converter</summary>
+  <description>
+    <p>
+      VectorAI is an Ubuntu-inspired utility for high-speed image processing. 
+      It leverages GPU-accelerated WebGL 2.0 to trace paths and Gemini AI for 
+      intelligent shape recognition.
+    </p>
+    <ul>
+      <li>Batch process PNG/JPG to SVG</li>
+      <li>GPU-accelerated offline tracing</li>
+      <li>Multi-page PDF stitching</li>
+      <li>Built-in Vector Path Editor</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">org.vectorai.VectorAI.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The main dashboard with batch processing</caption>
+      <image>https://raw.githubusercontent.com/example/vectorai/main/screenshots/main.png</image>
+    </screenshot>
+  </screenshots>
+</component>
